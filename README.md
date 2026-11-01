@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/brand/lockup/lockup-color.svg" alt="AuditsMadeSimple" width="442">
+</p>
+
 # Fiscal Patriots
 
 ## Team (Fiscal Patriots)
