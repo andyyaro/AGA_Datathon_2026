@@ -2,6 +2,12 @@
   <img src="docs/assets/brand/lockup/lockup-color.svg" alt="AuditsMadeSimple" width="442">
 </p>
 
+<p align="center">
+  <a href="https://andyyaro.github.io/AGA_Datathon_2026/film.html"><img src="docs/assets/readme/audits-made-simple-in-action.webp" alt="The live site at work, from the launch film: the glossary search fills in &quot;material weakness&quot; and the Material Weakness card flips to its plain-words definition, then the Audit Health Score simulator is dragged from 90 (low, green) to 70 (medium, yellow) and on to 25 (high, red). Select to watch the 67-second film." width="920"></a>
+</p>
+
+<p align="center"><b>Watch the 67-second launch film:</b> <a href="https://andyyaro.github.io/AGA_Datathon_2026/film.html">with sound and captions</a> · <a href="https://andyyaro.github.io/AGA_Datathon_2026/film/audits-made-simple-launch.mp4">MP4, 15.0 MB</a> · <a href="media/launch-film/">how it was made</a></p>
+
 # Fiscal Patriots
 
 ## Team (Fiscal Patriots)
@@ -110,6 +116,7 @@ data/           Clean outputs (CSV + Hyper) organized by domain
 pipeline/       Alteryx workflows + pipeline notes
 docs/           Data dictionaries + appendix hubs + team/competition docs
 assets/         Repo visuals used in README/docs
+media/          The launch film's source: composition, narration, sound and watch page
 ```
 
 ---

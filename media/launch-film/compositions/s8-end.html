@@ -1,0 +1,82 @@
+<template>
+  <style>
+    @font-face { font-family: "AMS Text"; src: url("assets/fonts/Inter-Medium.woff2") format("woff2"); font-weight: 500; font-display: block; }
+    /* the end card, Outbreak's way: the mark (drawn: the A, then the check), the wordmark, one line, the address */
+    #s8-all { position: absolute; inset: 0; }
+    #s8-mark { position: absolute; overflow: visible; }
+    #s8-word { position: absolute; display: block; }
+    #s8-line { position: absolute; left: 0; width: 1920px; text-align: center; font-family: "AMS Text", sans-serif; font-weight: 500;
+      font-size: 40px; line-height: 52px; letter-spacing: -0.012em; color: var(--label-2); white-space: nowrap; }
+    #s8-pillrow { position: absolute; left: 0; width: 1920px; display: flex; justify-content: center; }
+    #s8-pill { padding: 12px 34px; border-radius: 9999px; background: var(--surface); border: 1px solid var(--sep);
+      font-family: "AMS Text", sans-serif; font-weight: 500; font-size: 34px; line-height: 44px; letter-spacing: -0.01em; color: var(--blue); white-space: nowrap; }
+  </style>
+  <div id="root" data-composition-id="s8-end" data-width="1920" data-height="1080">
+    <div id="s8-all">
+      <svg id="s8-mark" viewBox="0 0 120 120" aria-label="AuditsMadeSimple mark">
+        <defs>
+          <mask id="s8-ko" maskUnits="userSpaceOnUse" x="-20" y="-20" width="160" height="160">
+            <rect x="-20" y="-20" width="160" height="160" fill="#fff" />
+            <path id="s8-kop" d="M34 70 L51 86 L94 44" fill="none" stroke="#000" stroke-width="25" stroke-linecap="round" stroke-linejoin="round" />
+          </mask>
+        </defs>
+        <g mask="url(#s8-ko)"><path id="s8-a" d="M20 104 L60 16 L100 104" fill="none" stroke="#1F3FE0" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" /></g>
+        <path id="s8-c" d="M34 70 L51 86 L94 44" fill="none" stroke="#FF5A3C" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <img id="s8-word" src="assets/brand/film/wordmark.svg" alt="AuditsMadeSimple" />
+      <div id="s8-line">Federal spending and audit data, made understandable.</div>
+      <div id="s8-pillrow"><div id="s8-pill">gmufiscalpatriots.bytechisel.com</div></div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const TM = window.TM, VO = window.VO;
+      const S0 = TM.s8[0], S1 = TM.s8[1];
+      const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const W = (k, w, nth = 0) => {
+        const alts = w.split("|");
+        for (const exact of [true, false]) {
+          let c = 0;
+          for (const x of VO[k].words) {
+            const t = norm(x.w);
+            if (alts.some((a) => (exact ? t === a : t.startsWith(a)))) { if (c === nth) return x.t0 - S0; c++; }
+          }
+        }
+        return VO[k].start - S0;
+      };
+      const tl = gsap.timeline({ paused: true });
+      const rise = (el, t, d = 0.6, dy = 20) =>
+        tl.fromTo(el, { opacity: 0, y: dy, filter: "blur(5px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: d, ease: "power3.out", immediateRender: false }, t - 0.04);
+
+      // the lockup in the brand lockup's proportions (mark 168, gap 36, wordmark 344 x 110.72 at +28.906), centred
+      const MS = 210, k = MS / 168, WW = 344 * k, WH = 110.72 * k, GAP = 36 * k;
+      const LX = Math.round((1920 - (MS + GAP + WW)) / 2), MY = 318;
+      Object.assign(document.querySelector("#s8-mark").style, { left: LX + "px", top: MY + "px", width: MS + "px", height: MS + "px" });
+      Object.assign(document.querySelector("#s8-word").style, { left: (LX + MS + GAP).toFixed(1) + "px", top: (MY + 28.906 * k).toFixed(1) + "px", width: WW.toFixed(1) + "px", height: WH.toFixed(1) + "px" });
+      document.querySelector("#s8-line").style.top = MY + MS + 60 + "px";
+      document.querySelector("#s8-pillrow").style.top = MY + MS + 146 + "px";
+
+      // the mark draws: the A, then the check lands (the soft pop in the mix, s8 + 1.0)
+      const LA = 193.33, LC = 83.46;
+      gsap.set("#s8-a", { strokeDasharray: LA + 1, strokeDashoffset: LA + 1, opacity: 0 });
+      gsap.set(["#s8-c", "#s8-kop"], { strokeDasharray: LC + 1, strokeDashoffset: LC + 1, opacity: 0 });
+      tl.set("#s8-a", { opacity: 1 }, 0.12);
+      tl.to("#s8-a", { strokeDashoffset: 0, duration: 0.62, ease: "power2.inOut" }, 0.11);
+      tl.set(["#s8-c", "#s8-kop"], { opacity: 1 }, 0.66);
+      tl.to(["#s8-c", "#s8-kop"], { strokeDashoffset: 0, duration: 0.34, ease: "power2.out" }, 0.65);
+
+      // the name, on "Audits"; the line; the address on "Explore"
+      gsap.set("#s8-word", { clipPath: "inset(0% 100% 0% 0%)", opacity: 0 });
+      tl.fromTo("#s8-word", { clipPath: "inset(0% 100% 0% 0%)", opacity: 0, x: -14 },
+        { clipPath: "inset(0% 0% 0% 0%)", opacity: 1, x: 0, duration: 0.85, ease: "power3.out", immediateRender: false }, W("v13", "audits") - 0.05);
+      gsap.set(["#s8-line", "#s8-pillrow"], { opacity: 0 });
+      rise("#s8-line", W("v13", "simple"), 0.65, 18);
+      rise("#s8-pillrow", W("v13", "explore"), 0.6, 16);
+
+      // hold, then fade with the music
+      tl.to("#s8-all", { opacity: 0, duration: 0.9, ease: "power1.in" }, S1 - S0 - 0.95);
+      tl.set({}, {}, S1 - S0);
+      window.__timelines["s8-end"] = tl;
+    })();
+  </script>
+</template>

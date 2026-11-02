@@ -1,0 +1,109 @@
+<template>
+  <style>
+    @font-face { font-family: "AMS Text"; src: url("assets/fonts/Inter-Regular.woff2") format("woff2"); font-weight: 400; font-display: block; }
+    @font-face { font-family: "AMS Text"; src: url("assets/fonts/Inter-Medium.woff2") format("woff2"); font-weight: 500; font-display: block; }
+    @font-face { font-family: "AMS Text"; src: url("assets/fonts/Inter-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: block; }
+    @font-face { font-family: "AMS Display"; src: url("assets/fonts/InterDisplay-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: block; }
+    /* the proof, on the bare ground the window left: one real number (FACTS #14-16), aligned to the window's left edge */
+    #s6-kick { left: 360px; top: 222px; }
+    #s6-head { left: 360px; top: 270px; font-size: 88px; line-height: 96px; }
+    #s6-big { position: absolute; left: 352px; top: 258px; font-family: "AMS Display", sans-serif; font-weight: 600; font-size: 184px; line-height: 200px;
+      letter-spacing: -0.035em; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    #s6-line { position: absolute; left: 360px; top: 470px; font-family: "AMS Text", sans-serif; font-weight: 500; font-size: 46px; line-height: 58px;
+      letter-spacing: -0.015em; color: var(--ink); white-space: nowrap; }
+    #s6-bar { position: absolute; left: 360px; top: 604px; width: 1200px; height: 30px; border-radius: 15px; overflow: hidden; background: var(--fill-3); }
+    .s6-seg { position: absolute; top: 0; height: 30px; transform-origin: 0% 50%; }
+    #s6-keys { position: absolute; left: 360px; top: 660px; display: flex; gap: 56px; }
+    .s6-key { display: flex; align-items: center; gap: 12px; white-space: nowrap;
+      font-family: "AMS Text", sans-serif; font-weight: 500; font-size: 28px; line-height: 36px; color: var(--label-2); }
+    .s6-key i { display: block; flex: none; width: 14px; height: 14px; border-radius: 50%; }
+    .s6-key b { font-weight: 600; color: var(--ink); }
+    #s6-foot { position: absolute; left: 360px; top: 808px; width: 1200px; font-family: "AMS Text", sans-serif; font-weight: 400; font-size: 25px; line-height: 36px;
+      color: var(--label-2); white-space: nowrap; }
+  </style>
+  <div id="root" data-composition-id="s6-proof" data-width="1920" data-height="1080">
+    <div id="s6-kick" class="kick">What the scores show</div>
+    <div id="s6-head" class="head">Joined with spending records.</div>
+    <div id="s6-big"><span id="s6-n">$1.09</span> trillion</div>
+    <div id="s6-line">went to 9,976 recipients in the red tier.</div>
+    <div id="s6-bar">
+      <div class="s6-seg" id="s6-g" style="background: var(--green)"></div>
+      <div class="s6-seg" id="s6-y" style="background: var(--yellow)"></div>
+      <div class="s6-seg" id="s6-r" style="background: var(--red)"></div>
+    </div>
+    <div id="s6-keys">
+      <div class="s6-key" id="s6-kg"><i style="background: var(--green)"></i><b>Green</b><span>$372.0 billion</span></div>
+      <div class="s6-key" id="s6-ky"><i style="background: var(--yellow)"></i><b>Yellow</b><span>$598.6 billion</span></div>
+      <div class="s6-key" id="s6-kr"><i style="background: var(--red)"></i><b>Red</b><span>$1.09 trillion</span></div>
+    </div>
+    <div id="s6-foot">FAC audits joined to USAspending awards on UEI, fiscal years 2019 to 2024.<br />A signal, not proof of wrongdoing.</div>
+  </div>
+  <script>
+    (function () {
+      const TM = window.TM, VO = window.VO;
+      const S0 = TM.s6[0], S1 = TM.s6[1];
+      const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const W = (k, w, nth = 0) => {
+        const alts = w.split("|");
+        for (const exact of [true, false]) {
+          let c = 0;
+          for (const x of VO[k].words) {
+            const t = norm(x.w);
+            if (alts.some((a) => (exact ? t === a : t.startsWith(a)))) { if (c === nth) return x.t0 - S0; c++; }
+          }
+        }
+        return VO[k].start - S0;
+      };
+      const tl = gsap.timeline({ paused: true });
+      const rise = (el, t, d = 0.55, dy = 22) =>
+        tl.fromTo(el, { opacity: 0, y: dy, filter: "blur(5px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: d, ease: "power3.out", immediateRender: false }, t - 0.04);
+
+      // the bar, split by funding per tier (FAC_USAspending_Summary_By_Tier.csv): 4 px gaps between the parts
+      const B = { g: 372.007782978, y: 598.637068412, r: 1087.407504827 }, TOT = B.g + B.y + B.r, GAPW = 4, IN = 1200 - 2 * GAPW;
+      const wg = (IN * B.g) / TOT, wy = (IN * B.y) / TOT, wr = IN - wg - wy;
+      const place = (id, x, w) => Object.assign(document.querySelector(id).style, { left: x.toFixed(1) + "px", width: w.toFixed(1) + "px" });
+      place("#s6-g", 0, wg); place("#s6-y", wg + GAPW, wy); place("#s6-r", wg + wy + 2 * GAPW, wr);
+
+      const all = ["#s6-kick", "#s6-big", "#s6-line", "#s6-bar", "#s6-kg", "#s6-ky", "#s6-kr", "#s6-foot"];
+      gsap.set([...all, "#s6-head"], { opacity: 0 });
+      gsap.set(".s6-seg", { scaleX: 0 });
+
+      rise("#s6-kick", W("v11", "joined") + 0.05, 0.5, 16);
+      // the voice's own clause holds the counter's place until the figure (review 2026-11-01: the slot sat empty for
+      // 2.3 s); it rises once the window has gone (47.61) and hands over to the counter the way s1's headlines do
+      rise("#s6-head", W("v11", "with"));
+      tl.fromTo("#s6-bar", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out", immediateRender: false }, W("v11", "spending") - 0.1);
+      rise("#s6-foot", W("v11", "spending") + 0.3, 0.6, 12);
+      // green and yellow fill as the voice joins the records; red waits for its word
+      const fill = (seg, key, t, d = 0.65) => {
+        tl.fromTo(seg, { scaleX: 0 }, { scaleX: 1, duration: d, ease: "power2.inOut", immediateRender: false }, t);
+        if (key) rise(key, t + 0.1, 0.5, 14);
+      };
+      fill("#s6-g", "#s6-kg", W("v11", "records"));
+      fill("#s6-y", "#s6-ky", W("v11", "scores"));
+
+      // the counter: $0.00 to $1.09 trillion as she says it, one value per film frame
+      const CT0 = W("v11", "1"), CT1 = W("v11", "trillion") - 0.1;
+      tl.to("#s6-head", { opacity: 0, y: -14, filter: "blur(5px)", duration: 0.28, ease: "power3.in" }, CT0 - 0.1 - 0.28);
+      rise("#s6-big", CT0 - 0.1, 0.5, 20);
+      const FPS = 30, f0 = Math.ceil(CT0 * FPS), f1 = Math.ceil(CT1 * FPS);
+      // the "$" rides in the string: GSAP reads a bare numeric string as a number and drops trailing zeros ("0.50" -> "0.5")
+      gsap.set("#s6-n", { innerText: "$0.00" });
+      for (let f = f0; f <= f1; f++) {
+        const p = Math.min(1, (f - f0) / (f1 - f0)), e = 1 - Math.pow(1 - p, 3);
+        tl.set("#s6-n", { innerText: "$" + (1.09 * e).toFixed(2) }, f / FPS - 0.004);
+      }
+      // the red part of the bar grows with the counter (same frames, same cubic ease out: the counter IS the red part),
+      // so the whole bar holds for 3 s before the scene leaves (review 2026-11-01: on "red" it completed 0.1 s before the
+      // exit, and its key had stood 2 s beside an empty track)
+      tl.fromTo("#s6-r", { scaleX: 0 }, { scaleX: 1, duration: (f1 - f0) / FPS, ease: "power2.out", immediateRender: false }, f0 / FPS - 0.004);
+      rise("#s6-kr", CT1 + 0.05, 0.5, 14);
+      rise("#s6-line", W("v11", "went") + 0.1, 0.55, 18);
+
+      // out, before the team
+      tl.to(all, { opacity: 0, y: -16, filter: "blur(5px)", duration: 0.34, ease: "power2.in" }, S1 - S0 - 0.38);
+      tl.set({}, {}, S1 - S0);
+      window.__timelines["s6-proof"] = tl;
+    })();
+  </script>
+</template>

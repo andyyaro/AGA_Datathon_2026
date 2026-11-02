@@ -1,0 +1,62 @@
+<template>
+  <style>
+    @font-face { font-family: "AMS Text"; src: url("assets/fonts/Inter-Regular.woff2") format("woff2"); font-weight: 400; font-display: block; }
+    @font-face { font-family: "AMS Text"; src: url("assets/fonts/Inter-Medium.woff2") format("woff2"); font-weight: 500; font-display: block; }
+    @font-face { font-family: "AMS Text"; src: url("assets/fonts/Inter-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: block; }
+    @font-face { font-family: "AMS Display"; src: url("assets/fonts/InterDisplay-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: block; }
+    /* the team and the result, top to bottom in the order the voice says it; the five names as plain text in one row,
+       with the roles the team's own About page gives them (FACTS #17-19) */
+    #s7-kick { left: 0; top: 314px; width: 1920px; text-align: center; }
+    #s7-names { position: absolute; left: 160px; top: 386px; width: 1600px; display: flex; }
+    .s7-p { flex: 1 1 0; text-align: center; white-space: nowrap; }
+    .s7-p b { display: block; font-family: "AMS Text", sans-serif; font-weight: 600; font-size: 31px; line-height: 40px; letter-spacing: -0.012em; color: var(--ink); }
+    .s7-p span { display: block; margin-top: 4px; font-family: "AMS Text", sans-serif; font-weight: 400; font-size: 25px; line-height: 32px; color: var(--label-2); }
+    #s7-head { left: 0; top: 536px; width: 1920px; text-align: center; font-size: 124px; line-height: 136px; letter-spacing: -0.03em; }
+    #s7-sub { left: 0; top: 694px; width: 1920px; text-align: center; font-size: 38px; line-height: 48px; }
+  </style>
+  <div id="root" data-composition-id="s7-team" data-width="1920" data-height="1080">
+    <div id="s7-kick" class="kick">Fiscal Patriots <span>· George Mason University</span></div>
+    <div id="s7-names">
+      <div class="s7-p"><b>Khaled Alkurd</b><span>Team lead</span></div>
+      <div class="s7-p"><b>Pranavi Doodala</b><span>Project manager</span></div>
+      <div class="s7-p"><b>Mariam Debas</b><span>Visualization lead</span></div>
+      <div class="s7-p"><b>Nikita Chandrasing</b><span>Product manager</span></div>
+      <div class="s7-p"><b>Andy Yaro</b><span>Product developer</span></div>
+    </div>
+    <div id="s7-head" class="head">1st place nationally.</div>
+    <div id="s7-sub" class="sub">AGA Datathon 2026 · Washington, D.C.</div>
+  </div>
+  <script>
+    (function () {
+      const TM = window.TM, VO = window.VO;
+      const S0 = TM.s7[0], S1 = TM.s7[1];
+      const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const W = (k, w, nth = 0) => {
+        const alts = w.split("|");
+        for (const exact of [true, false]) {
+          let c = 0;
+          for (const x of VO[k].words) {
+            const t = norm(x.w);
+            if (alts.some((a) => (exact ? t === a : t.startsWith(a)))) { if (c === nth) return x.t0 - S0; c++; }
+          }
+        }
+        return VO[k].start - S0;
+      };
+      const tl = gsap.timeline({ paused: true });
+      const rise = (el, t, d = 0.55, dy = 22) =>
+        tl.fromTo(el, { opacity: 0, y: dy, filter: "blur(5px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: d, ease: "power3.out", immediateRender: false }, t - 0.04);
+      const all = ["#s7-kick", ".s7-p", "#s7-head", "#s7-sub"];
+      gsap.set(all, { opacity: 0 });
+      // "Five students at George Mason built it": the team, then the five, left to right
+      rise("#s7-kick", W("v12", "five") - 0.2, 0.5, 16);
+      tl.fromTo(".s7-p", { opacity: 0, y: 16, filter: "blur(4px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out", stagger: 0.14, immediateRender: false }, W("v12", "students"));
+      // "and won first place nationally at the AGA Datathon"
+      rise("#s7-head", W("v12", "first"), 0.6, 26);
+      rise("#s7-sub", W("v12", "aga"), 0.55, 16);
+      tl.to(all, { opacity: 0, y: -16, filter: "blur(5px)", duration: 0.36, ease: "power2.in" }, S1 - S0 - 0.4);
+      tl.set({}, {}, S1 - S0);
+      window.__timelines["s7-team"] = tl;
+    })();
+  </script>
+</template>
